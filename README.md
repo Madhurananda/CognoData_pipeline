@@ -1,385 +1,395 @@
-# CognoSpeak – Automated Audio Processing & Metadata Pipeline
+<div align="center">
 
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Conda](https://img.shields.io/badge/conda-ACONDA-green.svg)](https://docs.conda.io/)
+# 🧠 CognoSpeak  
+### Automated Clinical Speech Processing & Metadata Pipeline
 
-**CognoSpeak** is an end-to-end data processing pipeline for clinical speech and cognitive assessment data. It downloads raw ZIP archives from Google Cloud, extracts audio/video, runs multiple automatic speech recognition (ASR) models (Whisper, Wav2Vec2, NeMo), aligns manual transcripts, computes audio quality metrics (VAD, SNR), manages participant metadata with duplicate detection and follow-up handling, and finally produces a shareable anonymised dataset.
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Conda](https://img.shields.io/badge/Environment-Conda-green.svg)](https://docs.conda.io/)
+[![CUDA](https://img.shields.io/badge/GPU-CUDA%20Supported-orange.svg)]()
+[![ASR](https://img.shields.io/badge/ASR-Whisper%20%7C%20Wav2Vec2%20%7C%20NeMo-red.svg)]()
+[![License](https://img.shields.io/badge/License-Research%20Only-lightgrey.svg)]()
+[![Status](https://img.shields.io/badge/Status-Active%20Research-success.svg)]()
+[![Open Science](https://img.shields.io/badge/Open%20Science-Compatible-blueviolet.svg)]()
+[![Reproducibility](https://img.shields.io/badge/Reproducible-Pipeline-brightgreen.svg)]()
 
----
+**End-to-end automated pipeline for clinical speech, cognition, and metadata processing.**
 
-## Table of Contents
+Designed for **digital dementia biomarkers**, **speech-based cognitive assessment**, and **clinical AI research**.
 
-- [Installation](#installation)
-- [Pipeline Overview](#pipeline-overview)
-- [Step-by-Step Execution](#step-by-step-execution)
-  - [Step 1 – Download raw ZIP files](#step-1--download-raw-zip-files)
-  - [Step 1A – Fix duplicated subject IDs](#step-1a--fix-duplicated-subject-ids)
-  - [Step 2 – Extract and organise audio](#step-2--extract-and-organise-audio)
-  - [Step 3 – Validate against spreadsheet/JSON](#step-3--validate-against-spreadsheetjson)
-  - [Step 4 – Handle duplicate participants](#step-4--handle-duplicate-participants)
-  - [Step 5 – Follow-up studies](#step-5--follow-up-studies)
-  - [Step 6 – Automatic speech recognition](#step-6--automatic-speech-recognition)
-  - [Step 7 – Manual transcripts alignment](#step-7--manual-transcripts-alignment)
-  - [Step 8 – Cognitive scores (MoCA, RUDAS, etc.)](#step-8--cognitive-scores-moca-rudas-etc)
-  - [Step 8B – Audio quality analysis (VAD/SNR)](#step-8b--audio-quality-analysis-vadsnr)
-  - [Step 9 – Detect and fix audio overlap](#step-9--detect-and-fix-audio-overlap)
-  - [Step 10 – Share final data](#step-10--share-final-data)
-- [Configuration](#configuration)
-- [Logging & Monitoring](#logging--monitoring)
-- [Troubleshooting](#troubleshooting)
-- [Citation & Contact](#citation--contact)
+</div>
 
 ---
 
-## Installation
+## 🔬 Overview
 
-### 1. Clone the repository
+**CognoSpeak** is a research-grade data processing pipeline that transforms raw clinical assessment recordings into a fully validated, anonymised, machine-learning-ready dataset.
+
+The system automatically:
+
+- Downloads clinical assessment archives from cloud storage
+- Extracts and standardises audio/video recordings
+- Runs multiple **Automatic Speech Recognition (ASR)** systems
+- Aligns manual clinical transcripts
+- Computes **audio quality metrics** (VAD, SNR)
+- Detects duplicate participants and follow-ups
+- Validates cognitive scores and demographics
+- Produces a shareable anonymised research dataset
+
+---
+
+## 🧬 Research Motivation
+
+Speech provides a scalable, non-invasive biomarker for:
+
+- Mild Cognitive Impairment (MCI)
+- Dementia screening
+- Functional cognitive decline
+- Longitudinal monitoring
+
+CognoSpeak operationalises **clinical speech AI pipelines** into a reproducible workflow suitable for:
+
+- Academic research
+- Clinical trials
+- Digital health studies
+- Multisite collaborations
+
+---
+
+## ⚙️ Pipeline Architecture
+
+```
+Cloud Storage (ZIP archives)
+        ↓
+Download & Validation
+        ↓
+Audio Extraction & Conversion
+        ↓
+Metadata Harmonisation
+        ↓
+Participant Deduplication
+        ↓
+Follow-Up Tracking
+        ↓
+ASR Processing
+        ↓
+Manual Transcript Alignment
+        ↓
+Cognitive Score Integration
+        ↓
+Audio Quality Analysis
+        ↓
+Overlap Detection & Repair
+        ↓
+Anonymised Research Dataset
+```
+
+---
+
+## 🚀 Installation
+
+### 1. Clone repository
 
 ```bash
 git clone https://github.com/your-username/CognoSpeak.git
 cd CognoSpeak
 ```
 
-### 2. Create the Conda environment
-
-The exact environment is provided in `ACONDA.yml`.
+### 2. Create environment
 
 ```bash
 conda env create -f ACONDA.yml
 conda activate ACONDA
 ```
 
-### 3. Verify the environment
+### 3. Verify setup
 
 ```bash
 python -c "import torch; print(torch.__version__)"
 ```
 
-Should run successfully (CUDA enabled if GPU is available).
-
-> **Note:**  
-The pipeline expects data directories (`../data/raw_data/`, `../data/EXTRACTED_RAW_DATA/`, etc.) relative to script locations. Adjust paths in `config.py` if required.
+CUDA support will automatically activate if available.
 
 ---
 
-## Pipeline Overview
+## 📂 Repository Structure
 
 ```
-Cloud Storage (ZIP)
-        ↓
-Step 1  Download
-        ↓
-Step 2  Extract & Convert
-        ↓
-Step 3  Validate JSON vs Spreadsheet
-        ↓
-Step 4  Deduplicate Participants
-        ↓
-Step 5  Follow-ups
-        ↓
-Step 6  ASR (Whisper / Wav2Vec2 / NeMo)
-        ↓
-Step 7  Manual Transcripts
-        ↓
-Step 8  Cognitive Scores + Audio Quality
-        ↓
-Step 9  Overlap Detection/Fix
-        ↓
-Step 10 Share Anonymised Dataset
+CognoSpeak/
+│
+├── CognoSpeak_1_download.py
+├── CognoSpeak_2_data_process.py
+├── CognoSpeak_3_check_final.py
+├── CognoSpeak_4_check_duplicates.py
+├── CognoSpeak_5_followUP.py
+├── CognoSpeak_6_ASR.py
+├── CognoSpeak_7_transcripts.py
+├── CognoSpeak_8_Cogn_scores.py
+├── CognoSpeak_8B_audio_analysis.py
+├── CognoSpeak_9A_FIND_audioOverlap.py
+├── CognoSpeak_9B_FIX_audioOverlap.py
+├── CognoSpeak_10_final_share.py
+│
+├── config.py
+└── ACONDA.yml
 ```
 
-All intermediate metadata and logs are saved as CSV files.  
-The final output is a clean dataset ready for machine learning or clinical analysis.
-
 ---
 
-## Step-by-Step Execution
+## 🧩 Step-by-Step Pipeline
 
-Run each script from the repository root and capture logs using `tee`.
-
----
-
-### Step 1 – Download raw ZIP files
+### Step 1 — Download Raw Data
 
 ```bash
-rm /home/madhu/madhu_work/data/logs/CognoSpeak_1_download.txt
-python CognoSpeak_1_download.py |& tee -a /home/madhu/madhu_work/data/logs/CognoSpeak_1_download.txt
+python CognoSpeak_1_download.py
 ```
 
-Downloads ZIP files from:
-
-```
-gs://cognospeak-production.appspot.com/production
-```
-
-Detects duplicated subject IDs and prints warnings.
+Downloads assessment ZIP files from Google Cloud and detects duplicated subject IDs.
 
 ---
 
-### Step 1A – Fix duplicated subject IDs
-
-- Same participant → add ZIPs to `list_same_ZIPs` in `config.py`
-- Different participants sharing ID → add to `list_of_2_update_ZIPs`
-
-Re-run Step 1 afterwards.
-
----
-
-### Step 1B & 1C – Update source files
-
-Replace:
-
-- `CcHAT_data_overview.xlsx`
-- `cognospeak-production-default-rtdb-export.json`
-
----
-
-### Step 2 – Extract and organise audio
+### Step 2 — Extract & Organise Audio
 
 ```bash
-python CognoSpeak_2_data_process.py 15 |& tee -a /home/madhu/madhu_work/data/logs/CognoSpeak_2_data_process.txt
+python CognoSpeak_2_data_process.py 15
 ```
 
-- Extracts ZIPs
-- Converts media → `.wav` (44.1 kHz)
-- Merges continuous recordings
-
-Outputs:
-
-- `CognoSpeak_2__dir_media_info.csv`
-- `CognoSpeak_2__assess_missing.csv`
+- Extracts archives
+- Converts media → 44.1 kHz WAV
+- Merges recordings
 
 ---
 
-### Step 3 – Validate against spreadsheet/JSON
+### Step 3 — Metadata Validation
 
 ```bash
-python CognoSpeak_3_check_final.py 15 |& tee -a /home/madhu/madhu_work/data/logs/CognoSpeak_3_check_final.txt
+python CognoSpeak_3_check_final.py 15
 ```
 
-Cross-checks demographic and diagnosis fields.
-
-Outputs:
-
-- `CognoSpeak_FINAL_METADATA.csv`
-- `CognoSpeak_3_possible_duplicates.csv`
-
----
-
-### Step 4 – Handle duplicate participants
-
-```bash
-python CognoSpeak_4_check_duplicates.py |& tee -a /home/madhu/madhu_work/data/logs/CognoSpeak_4_check_duplicates.txt
-```
-
-Automatically merges duplicates using identifiers such as NHS number, email, phone, DoB.
-
-Key outputs:
-
-- `CognoSpeak_4__duplicates_TO_BE_confirmed.csv`
-- `CognoSpeak_4__duplicates_FINAL_confirmed_FINAL.csv`
-- `CognoSpeak_4__ID_remove.csv`
-
----
-
-### Step 5 – Follow-up studies
-
-```bash
-python CognoSpeak_5_followUP.py |& tee -a /home/madhu/madhu_work/data/logs/CognoSpeak_5_followUP.txt
-```
-
-- Orders assessments chronologically
-- Computes follow-up gaps
-- Flags inconsistent diagnoses
+Cross-checks spreadsheet and database exports.
 
 Output:
-
 ```
-CognoSpeak_5__FINAL_METADATA.csv
+CognoSpeak_FINAL_METADATA.csv
 ```
 
 ---
 
-### Step 6 – Automatic Speech Recognition
-
-Run on a GPU machine.
+### Step 4 — Duplicate Detection
 
 ```bash
-rm /home/madhu/madhu_work/data/ASR_logs/CognoSpeak_6_ASR.txt
-python CognoSpeak_6_ASR.py 30 |& tee /home/madhu/madhu_work/data/ASR_logs/CognoSpeak_6_ASR.txt
+python CognoSpeak_4_check_duplicates.py
 ```
 
-Runs:
+Automatically merges participants using clinical identifiers.
 
-- Whisper medium
-- Wav2Vec2 base
+---
+
+### Step 5 — Follow-Up Handling
+
+```bash
+python CognoSpeak_5_followUP.py
+```
+
+Tracks longitudinal assessments and computes follow-up intervals.
+
+---
+
+### Step 6 — Automatic Speech Recognition
+
+```bash
+python CognoSpeak_6_ASR.py 30
+```
+
+Runs three ASR systems:
+
+- Whisper Medium
+- Wav2Vec2 Base
 - NVIDIA NeMo FastConformer
 
-Output:
+---
 
+### Step 7 — Manual Transcript Alignment
+
+```bash
+python CognoSpeak_7_transcripts.py 15
 ```
-CognoSpeak_ASR_out.csv
-```
+
+Maps clinician transcripts to audio recordings.
 
 ---
 
-### Step 7 – Manual transcripts alignment
+### Step 8 — Cognitive Scores Integration
 
 ```bash
-rm /home/madhu/madhu_work/data/trans_logs/CognoSpeak_7_trans.txt
-python CognoSpeak_7_transcripts.py 15 |& tee /home/madhu/madhu_work/data/trans_logs/CognoSpeak_7_trans.txt
+python CognoSpeak_8_Cogn_scores.py
 ```
 
-- Maps transcripts to audio
-- Splits per question
+Integrates:
 
-Output:
-
-```
-CognoSpeak_metadata_transcribed.csv
-```
+- MoCA
+- ACE-III
+- RUDAS
+- MCE
 
 ---
 
-### Step 8 – Cognitive scores (MoCA, RUDAS, MCE, ACE-III)
+### Step 8B — Audio Quality Analysis
 
 ```bash
-python CognoSpeak_8_Cogn_scores.py |& tee /home/madhu/madhu_work/data/logs/CognoSpeak_8_Cogn_scores.txt
+python CognoSpeak_8B_audio_analysis.py 15
 ```
 
-Validates component scores and merges into metadata.
+Computes:
 
-Outputs:
-
-- `CognoSpeak_MoCA_all_metadata.csv`
-- `CognoSpeak_ACE_all_metadata.csv`
+- Voice Activity Detection (VAD)
+- Signal-to-Noise Ratio (SNR)
 
 ---
 
-### Step 8B – Audio quality analysis (VAD/SNR)
+### Step 9 — Audio Overlap Detection
 
 ```bash
-python CognoSpeak_8B_audio_analysis.py 15 |& tee /home/madhu/madhu_work/data/logs/CognoSpeak_8B_audio_analysis.txt
+python CognoSpeak_9A_FIND_audioOverlap.py 30
 ```
 
-- Runs Silero VAD
-- Computes SNR
-
-Outputs:
-
-- `CognoSpeak__Audio_INFO.csv`
-- `CognoSpeak_8__metadata.csv`
+Detects recording overlap bugs and optionally repairs audio automatically.
 
 ---
 
-### Step 9 – Detect and fix audio overlap
-
-#### 9A – Find overlaps
-
-```bash
-rm /home/madhu/madhu_work/data/ASR_logs/find_audio_overlap.txt
-python CognoSpeak_9A_FIND_audioOverlap.py 30 |& tee /home/madhu/madhu_work/data/ASR_logs/find_audio_overlap.txt
-```
-
-Output:
-
-```
-Audio_overlap_FOUND.csv
-```
-
-#### 9B – Fix overlaps
-
-Option 1: Exclude assessments via `to_ignore_assessments`.
-
-Option 2:
-
-```bash
-rm /home/madhu/madhu_work/data/ASR_logs/fix_audio_overlap.txt
-python CognoSpeak_9B_FIX_audioOverlap.py 30 |& tee /home/madhu/madhu_work/data/ASR_logs/fix_audio_overlap.txt
-```
-
-Then repeat Steps 2–8.
-
----
-
-### Step 10 – Share final data
+### Step 10 — Export Anonymised Dataset
 
 ```bash
 python CognoSpeak_10_final_share.py 1
 ```
 
-- Copies final `.wav` + Whisper transcripts
-- Exports anonymised metadata
+Produces:
 
-Output:
-
-```
-CognoSpeak_metadata__YYYY_MM_DD.csv
-```
+- Final WAV files
+- Whisper transcripts
+- Timestamped anonymised metadata
 
 ---
 
-## Configuration
+## ⚙️ Configuration
 
-All configuration is defined in:
+All paths and dataset rules are defined in:
 
 ```
 config.py
 ```
 
-Key variables:
+Important variables:
 
 - `raw_data_dir`
-- `extracted_data_dir`
-- `final_extract_dir`
 - `cloud_base`
 - `to_ignore_assessments`
 - `SPECIAL_IDs_DIAGNOSIS`
-- referral/ethnicity groupings
-
-Activate environment before running scripts:
-
-```bash
-conda activate ACONDA
-```
 
 ---
 
-## Logging & Monitoring
+## 📊 Outputs
 
-Suggested log directories:
+The pipeline generates:
 
-```
-/home/madhu/madhu_work/data/logs/
-/home/madhu/madhu_work/data/ASR_logs/
-/home/madhu/madhu_work/data/trans_logs/
-```
+- Clean speech dataset
+- Validated clinical metadata
+- ASR transcripts
+- Audio quality metrics
+- Longitudinal participant tracking
 
-CSV outputs are stored under `../data/`.
+Ready for:
 
----
-
-## Troubleshooting
-
-| Issue | Cause | Solution |
-|------|------|------|
-| Duplicate ID persists | Same ID used twice | Add ZIP to `list_of_2_update_ZIPs` |
-| Duplicate ZIPs same person | Two assessments | Add to `list_same_ZIPs` |
-| Multiple JSON files | Extraction error | Keep latest JSON |
-| Step 2 hangs | subprocess timeout | Increase `SUB_TIMEOUT` |
-| ASR GPU OOM | Memory overload | Reduce batch size |
-| Missing transcripts | Filename mismatch | Check `CognoSpeak_transcript_info.csv` |
-| Overlap false positives | Unreliable timestamps | Filter assessment types |
-
-Most steps are idempotent and safe to re-run.
+✅ Machine Learning  
+✅ Statistical modelling  
+✅ Clinical validation studies  
 
 ---
 
-## Citation & Contact
+## 📈 Reproducibility & Open Science
 
-Proprietary Python scripts for retrieval and preprocessing of CognoSpeak data.  
-**Intended for authorised research use only.**
+This repository follows open-science best practices:
 
-> **Notice:**  
-This repository contains **code only**.  
-No research data or participant information is included or permitted within this repository.
+- Deterministic processing steps
+- Logged execution
+- Version-controlled preprocessing
+- Transparent data provenance
+- Script-level reproducibility
+
+⚠️ **No participant data is stored in this repository.**
+
+---
+
+## 🛠 Logging
+
+Recommended log folders:
+
+```
+data/logs/
+data/ASR_logs/
+data/trans_logs/
+```
+
+All major steps produce CSV audit files.
+
+---
+
+## 🧪 Intended Use
+
+This pipeline supports research in:
+
+- Speech biomarkers of dementia
+- Cognitive assessment automation
+- Clinical speech analytics
+- Digital health AI
+
+---
+
+## 📚 Citation
+
+If you use this pipeline, please cite:
+
+```
+CognoSpeak: Automated Clinical Speech Processing Pipeline
+Author(s): [madhurananda Pahar]
+Institution: [University of Sheffield]
+Year: 2026
+```
+
+(Add DOI once paper is published.)
+
+---
+
+## 🤝 Contributing
+
+Collaborations are welcome for:
+
+- Clinical speech AI
+- Multilingual dementia datasets
+- ASR benchmarking
+- Cognitive modelling
+
+Please open an Issue or Pull Request.
+
+---
+
+## 🔒 Data Governance
+
+**Proprietary research software — authorised research use only.**
+
+This repository contains:
+
+✅ Code  
+❌ No clinical data  
+❌ No participant information  
+
+All datasets must comply with institutional ethics approval and GDPR requirements.
+
+---
+
+<div align="center">
+
+**Built for reproducible clinical AI research.**
+
+🧠 Speech • Cognition • AI • Open Science
+
+</div>
