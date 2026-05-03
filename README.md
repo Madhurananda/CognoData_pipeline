@@ -344,21 +344,6 @@ This pipeline supports research in:
 
 ---
 
-## 📚 Citation
-
-If you use this pipeline, please cite:
-
-```
-CognoSpeak: Automated Clinical Speech Processing Pipeline
-Author(s): [madhurananda Pahar]
-Institution: [University of Sheffield]
-Year: 2026
-```
-
-(Add DOI once paper is published.)
-
----
-
 ## 🤝 Contributing
 
 Collaborations are welcome for:
